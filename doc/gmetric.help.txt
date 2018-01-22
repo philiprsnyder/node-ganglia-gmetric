@@ -1,0 +1,28 @@
+gmetric 3.6.0
+
+The Ganglia Metric Client (gmetric) announces a metric
+on the list of defined send channels defined in a configuration file
+
+Usage: gmetric [OPTIONS]...
+
+  -h, --help            Print help and exit
+  -V, --version         Print version and exit
+  -c, --conf=STRING     The configuration file to use for finding send channels 
+                           (default=`/etc/ganglia/gmond.conf')
+  -n, --name=STRING     Name of the metric
+  -v, --value=STRING    Value of the metric
+  -t, --type=STRING     Either 
+                          string|int8|uint8|int16|uint16|int32|uint32|float|double
+  -u, --units=STRING    Unit of measure for the value e.g. Kilobytes, Celcius  
+                          (default=`')
+  -s, --slope=STRING    Either zero|positive|negative|both  (default=`both')
+  -x, --tmax=INT        The maximum time in seconds between gmetric calls  
+                          (default=`60')
+  -d, --dmax=INT        The lifetime in seconds of this metric  (default=`0')
+  -g, --group=STRING    Group(s) of the metric (comma-separated)
+  -C, --cluster=STRING  Cluster of the metric
+  -D, --desc=STRING     Description of the metric
+  -T, --title=STRING    Title of the metric
+  -S, --spoof=STRING    IP address and name of host/device (colon separated) we 
+                          are spoofing  (default=`')
+  -H, --heartbeat       spoof a heartbeat message (use with spoof option)

@@ -1,0 +1,5 @@
+test/setup.js
+test/**/*spec.js
+--recursive
+--full-trace
+--exit
