@@ -59,6 +59,22 @@ const OPTIONS = {
   // name, type, unit, slope, tmax, dmax, group, cluster, desc, title, spoof, heartbeat,
 };
 
+const optMap = {
+  name: 'n',
+  value: 'v',
+  type: 't',
+  units: 'u',
+  slope: 's',
+  tmax: 'x',
+  dmax: 'd',
+  group: 'g',
+  cluster: 'C',
+  desc: 'D',
+  title: 'T',
+  spoof: 'S',
+  heartbeat: 'H',
+};
+
 const WRAP_OPTIONS = ['name', 'cluster', 'desc', 'title', 'spoof'];
 
 const DEFAULT_OPTIONS = _.get(process, 'env.ganglia.gmetric', {});
@@ -74,34 +90,45 @@ class GMetric {
       const opts = [];
       const m = _.extend({}, metric, this.metric);
       _.keys(m).forEach((key) => {
-        if (WRAP_OPTIONS.includes(key)) {
+        if (key === 'name') {
 	  opts.push(`--${key}='${m[key]}'`);
+          // opts.push(`-${optMap[key]} '${m[key]}'`);
+        } else if (WRAP_OPTIONS.includes(key)) {
+	  // opts.push(`--${key} '${m[key]}'`);
+          opts.push(`-${optMap[key]} '${m[key]}'`);
         } else {
-          opts.push(`--${key}=${m[key]}`);
+          // opts.push(`--${key} ${m[key]}`);
+          opts.push(`-${optMap[key]}${m[key]}`);
         }
       });
       const cmd = `gmetric ${opts.join(' ')}`;
       debug('cmd: ', cmd);
 
-      const out = [];
       const proc = spawn('gmetric', opts);
+
+      // append stdout to an array...
+      const out = [];
       proc.stdout.on('data', (data) => {
         debug(`stdout: ${data}`);
         out.push(data);
       });
 
+      // append stdout to a different array...
+      const err = [];
       proc.stderr.on('data', (data) => {
         debug(`stderr: ${data}`);
-        out.push(data);
+        err.push(data);
       });
 
+      // when process is done, resolve with {code, stdout, stderr}
       proc.on('close', (code) => {
         debug(`child process exited with code ${code}`);
-        resolve(out.join('\n'));
+        resolve({code, stdout: out.join('\n'), stderr: err.join('\n')});
       });
 
+      // when an error is encountered, reject the promise.
       proc.on('error', (err) => {
-        debug(`child process errored with ${err}`);
+        debug('child process errored:');
         debug(err);
         reject(err);
       });
